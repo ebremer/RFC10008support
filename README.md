@@ -37,6 +37,9 @@ Day **0** = RFC publication **2026-06-16**. ★ Stars are approximate (fetched ~
 | **urllib3** | ❓ Nothing | [urllib3/urllib3](https://github.com/urllib3/urllib3) | 4,041 | none found | n/a | Underpins many Python clients |
 | **Rust `http` crate** | ✅ Shipped | [hyperium/http](https://github.com/hyperium/http) | 1,362 | [PR #798](https://github.com/hyperium/http/pull/798) — merged · closes [#743](https://github.com/hyperium/http/issues/743) | **0** | `Method::QUERY`; safe + idempotent |
 | **Jakarta Servlet** | ✅ Completed | [jakartaee/servlet](https://github.com/jakartaee/servlet) | 325 | [Issue #1068](https://github.com/jakartaee/servlet/issues/1068) — closed completed | **+9** · closed ≤+34 | Cites Tomcat PR |
+| **Inrupt solid-client (JS)** | ❓ Nothing | [inrupt/solid-client-js](https://github.com/inrupt/solid-client-js) | 244 | none found | n/a | Solid data client; no RFC 10008 tracking — relevant once pods expose QUERY (e.g. LWS Search / Type Index) |
+| **Inrupt solid-client-authn (JS)** | ❓ Nothing | [inrupt/solid-client-authn-js](https://github.com/inrupt/solid-client-authn-js) | 77 | none found | n/a | Authenticated `fetch` for Solid; no QUERY-specific support found |
+| **Inrupt solid-client (Java)** | ❓ Nothing | [inrupt/solid-client-java](https://github.com/inrupt/solid-client-java) | 16 | none found | n/a | Java Solid client; no RFC 10008 tracking found |
 | **W3C LWS** | ✅ Merged, contested | [w3c/lws-protocol](https://github.com/w3c/lws-protocol) | 26 | [PR #179](https://github.com/w3c/lws-protocol/pull/179) — merged | **+10** · merged **≈+34** | QUERY for Search / Type Index; GET/POST fallback still debated |
 
 ---
@@ -64,8 +67,8 @@ Infrastructure that sits in front of apps. Body-aware caching and method allow-l
 
 | Stack | Status | Repo | ★ Stars | PR / issue | Days after RFC | Notes |
 |---|---|---|---:|---|---|---|
-| **WHATWG HTML** | ⚠️ Open | [whatwg/html](https://github.com/whatwg/html) | 9,329 | [Issue #12594](https://github.com/whatwg/html/issues/12594) — open | **+1** | `<form method="query">`; needs implementer interest |
 | **MDN** | ⚠️ Open | [mdn/content](https://github.com/mdn/content) | 10,886 | [PR #44568](https://github.com/mdn/content/pull/44568) — open · [Issue #44665](https://github.com/mdn/content/issues/44665) — open | **+8** / **+22** | QUERY method + `Accept-Query` docs |
+| **WHATWG HTML** | ⚠️ Open | [whatwg/html](https://github.com/whatwg/html) | 9,329 | [Issue #12594](https://github.com/whatwg/html/issues/12594) — open | **+1** | `<form method="query">`; needs implementer interest |
 | **Browsers / fetch()** | ✅ Works, unofficial | [whatwg/fetch](https://github.com/whatwg/fetch) | 2,243 | [Issue #1938](https://github.com/whatwg/fetch/issues/1938) — open | **+14** | [Mozilla #1430](https://github.com/mozilla/standards-positions/issues/1430) open · [WebKit #692](https://github.com/WebKit/standards-positions/issues/692) closed invalid |
 | **RFC 10008** | ✅ Published | [IETF HTTP WG](https://datatracker.ietf.org/wg/httpbis/) | — | [RFC 10008](https://datatracker.ietf.org/doc/rfc10008/) | **0** | IESG approval Nov 20, 2025 = −208; label [`query-method`](https://github.com/httpwg/http-extensions/labels/query-method) |
 
