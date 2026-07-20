@@ -50,8 +50,8 @@ Infrastructure that sits in front of apps. Body-aware caching and method allow-l
 
 | Stack | Status | Repo | ★ Stars | PR / issue | Days after RFC | Notes |
 |---|---|---|---:|---|---|---|
-| **Traefik** | ❓ Nothing | [traefik/traefik](https://github.com/traefik/traefik) | 64,053 | none found | n/a | No public RFC 10008 tracking found |
-| **Kong** | ❓ Nothing | [Kong/kong](https://github.com/Kong/kong) | 43,822 | none found | n/a | No public RFC 10008 tracking found |
+| **Traefik** | ⚠️ Open | [traefik/traefik](https://github.com/traefik/traefik) | 64,053 | [Issue #13544](https://github.com/traefik/traefik/issues/13544) — open | **+34** (Jul 20) | End-to-end QUERY: forward, middlewares, body-keyed cache |
+| **Kong** | ⚠️ Open | [Kong/kong](https://github.com/Kong/kong) | 43,822 | [Discussion #14944](https://github.com/Kong/kong/discussions/14944) — open | **+34** (Jul 20) | End-to-end QUERY: proxy, plugins, body-keyed Proxy Cache; retries list missing QUERY |
 | **nginx** | ⚠️ Open | [nginx/nginx](https://github.com/nginx/nginx) | 31,171 | [PR #1488](https://github.com/nginx/nginx/pull/1488) — open · ([#1511](https://github.com/nginx/nginx/pull/1511) closed) | **+6** | Recognition only; body cache key TBD |
 | **Envoy** | ❓ Nothing | [envoyproxy/envoy](https://github.com/envoyproxy/envoy) | 28,606 | none found | n/a | No public RFC 10008 tracking found |
 | **Cloudflare workerd** | ⚠️ Open | [cloudflare/workerd](https://github.com/cloudflare/workerd) | 8,411 | [Issue #6849](https://github.com/cloudflare/workerd/issues/6849) — open | **+14** | Body-keyed QUERY caching (Cache API) |
