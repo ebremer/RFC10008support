@@ -102,5 +102,5 @@ Infrastructure in front of apps. Body-aware caching and method allow-lists matte
 
 ## Related trackers
 
-- [jeswr/http-query-adoption](https://github.com/jeswr/http-query-adoption)
+- [jeswr/http-query-adoption](https://github.com/jeswr/http-query-adoption) — **retired**; content assimilated into the tables above
 - Digest-based QUERY cache negotiation (proposal): [httpwg/http-extensions#3469](https://github.com/httpwg/http-extensions/issues/3469) → HTTP WG list
