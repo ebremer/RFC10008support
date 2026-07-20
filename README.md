@@ -2,56 +2,76 @@
 
 Day **0** = RFC publication **2026-06-16**. ★ Stars are approximate (fetched ~2026-07-20).
 
+Tracking is split by role: **servers** (inbound), **clients** (outbound), **edge** (proxies/caches), and **specs/docs**. The same monorepo can appear in more than one table when server and client surfaces differ (e.g. Spring Framework).
+
 ---
 
-## Runtimes, frameworks & clients
+## Servers & frameworks (inbound)
+
+Stacks that **accept** or **route** QUERY.
 
 | Stack | Status | Repo | ★ Stars | PR / issue | Days after RFC | Notes |
 |---|---|---|---:|---|---|---|
-| **Go (net/http)** | ⚠️ Manual | [golang/go](https://github.com/golang/go) | 135,304 | [Issue #80058](https://github.com/golang/go/issues/80058) — open · [PR #80134](https://github.com/golang/go/pull/80134) — open | **+2** issue · PR **+8** | Raw method strings work; `MethodQuery` proposal + PR not merged |
-| **Node.js (core)** | ✅ Shipped | [nodejs/node](https://github.com/nodejs/node) | 118,327 | [v21.7.2 release](https://github.com/nodejs/node/releases/tag/v21.7.2) (llhttp 9.2.0) | **−804** | Earliest shipper |
-| **Deno** | ⚠️ Open | [denoland/deno](https://github.com/denoland/deno) | 107,760 | [Issue #36186](https://github.com/denoland/deno/issues/36186) — open | **+34** | Feature request; `fetch()` may already accept method string |
+| **Go (net/http)** | ⚠️ Manual | [golang/go](https://github.com/golang/go) | 135,304 | [Issue #80058](https://github.com/golang/go/issues/80058) — open · [PR #80134](https://github.com/golang/go/pull/80134) — open | **+2** issue · PR **+8** | Raw method strings work; `MethodQuery` not merged |
+| **Node.js (core)** | ✅ Shipped | [nodejs/node](https://github.com/nodejs/node) | 118,327 | [v21.7.2 release](https://github.com/nodejs/node/releases/tag/v21.7.2) (llhttp 9.2.0) | **−804** | Earliest shipper (parse/route QUERY) |
+| **Deno** | ⚠️ Open | [denoland/deno](https://github.com/denoland/deno) | 107,760 | [Issue #36186](https://github.com/denoland/deno/issues/36186) — open | **+34** | Feature request; `Deno.serve` may accept method string |
 | **FastAPI** | ❓ Nothing | [tiangolo/fastapi](https://github.com/tiangolo/fastapi) | 100,699 | none found | n/a | No dedicated RFC 10008 tracking found |
-| **Bun** | ✅ Works (generic) | [oven-sh/bun](https://github.com/oven-sh/bun) | 94,911 | [Issue #34839](https://github.com/oven-sh/bun/issues/34839) — closed | **+34** | Bot verified `fetch` / `Bun.serve` / `node:http` + body; not full RFC semantics |
+| **Bun** | ✅ Works (generic) | [oven-sh/bun](https://github.com/oven-sh/bun) | 94,911 | [Issue #34839](https://github.com/oven-sh/bun/issues/34839) — closed | **+34** | `Bun.serve` + body verified; not full RFC semantics |
 | **Django** | ❓ Nothing | [django/django](https://github.com/django/django) | 88,188 | none found | n/a | No dedicated RFC 10008 tracking found |
-| **CPython (`http`)** | ⚠️ Open | [python/cpython](https://github.com/python/cpython) | 73,835 | [Issue #153309](https://github.com/python/cpython/issues/153309) — open · [PR #153310](https://github.com/python/cpython/pull/153310) — open | **+22** | Stdlib `http` module / method constant |
-| **Express** | ✅ Works | [expressjs/express](https://github.com/expressjs/express) | 69,226 | [Issue #5615](https://github.com/expressjs/express/issues/5615) — closed completed | **−787** | No code PR; works on QUERY-capable Node |
-| **Spring** | ❌ Not shipped | [spring-projects/spring-framework](https://github.com/spring-projects/spring-framework) | 60,128 | [PR #34993](https://github.com/spring-projects/spring-framework/pull/34993) — open (fixes [#32975](https://github.com/spring-projects/spring-framework/issues/32975)); [#36988](https://github.com/spring-projects/spring-framework/issues/36988) closed duplicate | **−378** · revived +15–17 | Community-approved Jul 3; still open |
+| **CPython (`http.server`)** | ⚠️ Open | [python/cpython](https://github.com/python/cpython) | 73,835 | [Issue #153309](https://github.com/python/cpython/issues/153309) — open · [PR #153310](https://github.com/python/cpython/pull/153310) — open | **+22** | Stdlib HTTP support / method constant (shared issue with client) |
+| **Express** | ✅ Works | [expressjs/express](https://github.com/expressjs/express) | 69,226 | [Issue #5615](https://github.com/expressjs/express/issues/5615) — closed completed | **−787** | Works on QUERY-capable Node |
+| **Spring MVC / WebFlux** | ❌ Not shipped | [spring-projects/spring-framework](https://github.com/spring-projects/spring-framework) | 60,128 | [PR #34993](https://github.com/spring-projects/spring-framework/pull/34993) — open (fixes [#32975](https://github.com/spring-projects/spring-framework/issues/32975)); [#36988](https://github.com/spring-projects/spring-framework/issues/36988) closed duplicate | **−378** · revived +15–17 | `RequestMethod` / `@RequestMapping` QUERY; community-approved Jul 3 |
 | **Rails** | ⚠️ PR open | [rails/rails](https://github.com/rails/rails) | 58,634 | [PR #57973](https://github.com/rails/rails/pull/57973) — open ([forum](https://discuss.rubyonrails.org/t/proposal-support-for-the-http-query-method-rfc-10008/91255)) | **~+6** → PR **+17** | Core reviewed +30 |
-| **requests** | ❌ Declined | [psf/requests](https://github.com/psf/requests) | 54,136 | [Issue #7558](https://github.com/psf/requests/issues/7558) — closed not planned · [PR #7577](https://github.com/psf/requests/pull/7577) — closed unmerged | **+18** / **+24** | No first-class `requests.query()`; raw method may still work |
-| **curl** | ✅ Generic | [curl/curl](https://github.com/curl/curl) | 42,429 | none needed | n/a | `-X QUERY` works today |
 | **PHP (CLI server)** | ✅ Merged | [php/php-src](https://github.com/php/php-src) | 40,245 | [PR #22615](https://github.com/php/php-src/pull/22615) — merged | **+20** · merged **+22** | Built-in dev server accepts QUERY (was 501) |
-| **ASP.NET Core** | ⚠️ Preview | [dotnet/aspnetcore](https://github.com/dotnet/aspnetcore) | 38,222 | [PR #65714](https://github.com/dotnet/aspnetcore/pull/65714) — shipped in 11 Preview 4 | **−35** | OpenAPI recognizes QUERY as operation type |
-| **Fastify** | ✅ Shipped (main) | [fastify/fastify](https://github.com/fastify/fastify) | 36,767 | [PR #6832](https://github.com/fastify/fastify/pull/6832) — merged · closes [#6807](https://github.com/fastify/fastify/issues/6807) | **+5** · merged **+30** | First-class QUERY; release tag TBC |
-| **Laravel** | ⚠️ Partial | [laravel/framework](https://github.com/laravel/framework) | 34,802 | Client [PR #60663](https://github.com/laravel/framework/pull/60663) — merged · routing [PR #60810](https://github.com/laravel/framework/pull/60810) closed (defer L14); also [#60655](https://github.com/laravel/framework/pull/60655) | **+17** client | `Http::query()` on 13.x; full routing aimed at Laravel 14 |
-| **OpenAPI** | ✅ Spec-level | [OAI/OpenAPI-Specification](https://github.com/OAI/OpenAPI-Specification) | 31,098 | [3.2.0 announcement](https://www.openapis.org/blog/2025/09/23/announcing-openapi-v3-2) | **−266** | — |
+| **ASP.NET Core** | ⚠️ Preview | [dotnet/aspnetcore](https://github.com/dotnet/aspnetcore) | 38,222 | [PR #65714](https://github.com/dotnet/aspnetcore/pull/65714) — shipped in 11 Preview 4 | **−35** | Server + OpenAPI operation type |
+| **Fastify** | ✅ Shipped (main) | [fastify/fastify](https://github.com/fastify/fastify) | 36,767 | [PR #6832](https://github.com/fastify/fastify/pull/6832) — merged · closes [#6807](https://github.com/fastify/fastify/issues/6807) | **+5** · merged **+30** | First-class QUERY routing; release tag TBC |
+| **Laravel (routing)** | ⚠️ Deferred | [laravel/framework](https://github.com/laravel/framework) | 34,802 | [PR #60810](https://github.com/laravel/framework/pull/60810) closed (L14); [#60655](https://github.com/laravel/framework/pull/60655) | **+30** | Full route support aimed at Laravel 14 |
 | **Axum** | ⚠️ Open | [tokio-rs/axum](https://github.com/tokio-rs/axum) | 26,571 | [Issue #3799](https://github.com/tokio-rs/axum/issues/3799) — open · [PR #3801](https://github.com/tokio-rs/axum/pull/3801) — open | **0** / **+1** | QUERY method routing |
-| **Guzzle** | ✅ Works + redirects | [guzzle/guzzle](https://github.com/guzzle/guzzle) | 23,452 | [Issue #3699](https://github.com/guzzle/guzzle/issues/3699) — closed · [PR #3702](https://github.com/guzzle/guzzle/pull/3702) — merged | **+8** | Method string always worked; redirect middleware fixed for QUERY |
-| **aiohttp** | ✅ Merged | [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp) | 16,502 | [Issue #13160](https://github.com/aio-libs/aiohttp/issues/13160) — closed · [PR #13174](https://github.com/aio-libs/aiohttp/pull/13174) — merged | **+30** · merged **+34** | llhttp method table includes QUERY (C parser fix) |
-| **hyper** | ✅ Via `http` | [hyperium/hyper](https://github.com/hyperium/hyper) | 16,232 | inherits [hyperium/http#798](https://github.com/hyperium/http/pull/798) | **0** | Uses `http::Method::QUERY` |
-| **httpx** | ❓ Nothing | [encode/httpx](https://github.com/encode/httpx) | 15,356 | none found | n/a | Arbitrary methods usually work; no RFC tracking found |
-| **reqwest** | ❌ Declined | [seanmonstar/reqwest](https://github.com/seanmonstar/reqwest) | 11,738 | [Issue #3056](https://github.com/seanmonstar/reqwest/issues/3056) — closed not planned | **0** | Re-exports / uses `http` crate methods |
+| **aiohttp (server)** | ✅ Merged | [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp) | 16,502 | [Issue #13160](https://github.com/aio-libs/aiohttp/issues/13160) — closed · [PR #13174](https://github.com/aio-libs/aiohttp/pull/13174) — merged | **+30** · merged **+34** | C parser recognizes QUERY |
 | **Tomcat** | ✅ Merged | [apache/tomcat](https://github.com/apache/tomcat) | 8,211 | [PR #1026](https://github.com/apache/tomcat/pull/1026) — merged | **+15** | Release placement TBC |
-| **undici** | ✅ Shipped | [nodejs/undici](https://github.com/nodejs/undici) | 7,651 | [Issue #5454](https://github.com/nodejs/undici/issues/5454) · [PR #5459](https://github.com/nodejs/undici/pull/5459) — merged | **+11** / **+13** · npm 8.6.0 at +16 | Node’s `fetch` implementation |
 | **Jetty** | ⚠️ Open | [jetty/jetty.project](https://github.com/jetty/jetty.project) | 4,091 | [PR #15316](https://github.com/jetty/jetty.project/pull/15316) — open | **+5** | Targeted at Jetty 13.0.x (not 12.x) |
+| **Undertow** | ❓ Nothing | [undertow-io/undertow](https://github.com/undertow-io/undertow) | 3,756 | none found | n/a | Servlet container (Spring Boot option); no RFC tracking found |
+| **Jakarta Servlet** | ✅ Completed | [jakartaee/servlet](https://github.com/jakartaee/servlet) | 325 | [Issue #1068](https://github.com/jakartaee/servlet/issues/1068) — closed completed | **+9** · closed ≤+34 | Spec-level container contract; cites Tomcat PR |
+| **W3C LWS** | ✅ Merged, contested | [w3c/lws-protocol](https://github.com/w3c/lws-protocol) | 26 | [PR #179](https://github.com/w3c/lws-protocol/pull/179) — merged | **+10** · merged **≈+34** | QUERY for Search / Type Index; GET/POST fallback debated |
+
+---
+
+## Clients (outbound)
+
+Stacks that **send** QUERY.
+
+| Stack | Status | Repo | ★ Stars | PR / issue | Days after RFC | Notes |
+|---|---|---|---:|---|---|---|
+| **Go (net/http)** | ⚠️ Manual | [golang/go](https://github.com/golang/go) | 135,304 | [Issue #80058](https://github.com/golang/go/issues/80058) — open · [PR #80134](https://github.com/golang/go/pull/80134) — open | **+2** · **+8** | `NewRequest("QUERY", …)` works; constant pending |
+| **Node.js / undici** | ✅ Shipped | [nodejs/undici](https://github.com/nodejs/undici) | 7,651 | [Issue #5454](https://github.com/nodejs/undici/issues/5454) · [PR #5459](https://github.com/nodejs/undici/pull/5459) — merged | **+11** / **+13** · npm 8.6.0 at +16 | Node’s `fetch` implementation; body-aware cache key work |
+| **Deno (`fetch`)** | ⚠️ Open | [denoland/deno](https://github.com/denoland/deno) | 107,760 | [Issue #36186](https://github.com/denoland/deno/issues/36186) — open | **+34** | Feature request; method string may already work |
+| **Bun (`fetch` / node:http)** | ✅ Works (generic) | [oven-sh/bun](https://github.com/oven-sh/bun) | 94,911 | [Issue #34839](https://github.com/oven-sh/bun/issues/34839) — closed | **+34** | Client + body verified |
+| **CPython (`http.client`)** | ⚠️ Open | [python/cpython](https://github.com/python/cpython) | 73,835 | [Issue #153309](https://github.com/python/cpython/issues/153309) — open · [PR #153310](https://github.com/python/cpython/pull/153310) — open | **+22** | Stdlib client / method constant |
+| **Spring RestClient / WebClient** | ❓ Via mapping PR | [spring-projects/spring-framework](https://github.com/spring-projects/spring-framework) (`spring-web`) | 60,128 | Same Framework track as server ([#34993](https://github.com/spring-projects/spring-framework/pull/34993)); no RestClient-specific issue found | **−378**+ | Fluent clients; method usually delegated to JDK HC / Apache HC5 / Netty — track engines too |
+| **requests** | ❌ Declined | [psf/requests](https://github.com/psf/requests) | 54,136 | [Issue #7558](https://github.com/psf/requests/issues/7558) — closed not planned · [PR #7577](https://github.com/psf/requests/pull/7577) — closed unmerged | **+18** / **+24** | No first-class `requests.query()` |
+| **curl** | ✅ Generic | [curl/curl](https://github.com/curl/curl) | 42,429 | none needed | n/a | `-X QUERY` works today |
+| **Laravel `Http::query()`** | ✅ Merged | [laravel/framework](https://github.com/laravel/framework) | 34,802 | [PR #60663](https://github.com/laravel/framework/pull/60663) — merged | **+17** | Client helper on 13.x (routing separate) |
+| **Guzzle** | ✅ Works + redirects | [guzzle/guzzle](https://github.com/guzzle/guzzle) | 23,452 | [Issue #3699](https://github.com/guzzle/guzzle/issues/3699) — closed · [PR #3702](https://github.com/guzzle/guzzle/pull/3702) — merged | **+8** | Method string + redirect middleware fixed for QUERY |
+| **aiohttp (client)** | ✅ Merged | [aio-libs/aiohttp](https://github.com/aio-libs/aiohttp) | 16,502 | [Issue #13160](https://github.com/aio-libs/aiohttp/issues/13160) · [PR #13174](https://github.com/aio-libs/aiohttp/pull/13174) — merged | **+30** · **+34** | Shared parser fix benefits client + server |
+| **hyper** | ✅ Via `http` | [hyperium/hyper](https://github.com/hyperium/hyper) | 16,232 | inherits [hyperium/http#798](https://github.com/hyperium/http/pull/798) | **0** | `http::Method::QUERY` |
+| **httpx** | ❓ Nothing | [encode/httpx](https://github.com/encode/httpx) | 15,356 | none found | n/a | Arbitrary methods usually work |
+| **reqwest** | ❌ Declined | [seanmonstar/reqwest](https://github.com/seanmonstar/reqwest) | 11,738 | [Issue #3056](https://github.com/seanmonstar/reqwest/issues/3056) — closed not planned | **0** | Uses `http` crate methods |
 | **urllib3** | ❓ Nothing | [urllib3/urllib3](https://github.com/urllib3/urllib3) | 4,041 | none found | n/a | Underpins many Python clients |
 | **Rust `http` crate** | ✅ Shipped | [hyperium/http](https://github.com/hyperium/http) | 1,362 | [PR #798](https://github.com/hyperium/http/pull/798) — merged · closes [#743](https://github.com/hyperium/http/issues/743) | **0** | `Method::QUERY`; safe + idempotent |
-| **Jakarta Servlet** | ✅ Completed | [jakartaee/servlet](https://github.com/jakartaee/servlet) | 325 | [Issue #1068](https://github.com/jakartaee/servlet/issues/1068) — closed completed | **+9** · closed ≤+34 | Cites Tomcat PR |
-| **Inrupt solid-client (JS)** | ❓ Nothing | [inrupt/solid-client-js](https://github.com/inrupt/solid-client-js) | 244 | none found | n/a | Solid data client; no RFC 10008 tracking — relevant once pods expose QUERY (e.g. LWS Search / Type Index) |
-| **Inrupt solid-client-authn (JS)** | ❓ Nothing | [inrupt/solid-client-authn-js](https://github.com/inrupt/solid-client-authn-js) | 77 | none found | n/a | Authenticated `fetch` for Solid; no QUERY-specific support found |
-| **Inrupt solid-client (Java)** | ❓ Nothing | [inrupt/solid-client-java](https://github.com/inrupt/solid-client-java) | 16 | none found | n/a | Java Solid client; no RFC 10008 tracking found |
-| **W3C LWS** | ✅ Merged, contested | [w3c/lws-protocol](https://github.com/w3c/lws-protocol) | 26 | [PR #179](https://github.com/w3c/lws-protocol/pull/179) — merged | **+10** · merged **≈+34** | QUERY for Search / Type Index; GET/POST fallback still debated |
+| **Inrupt solid-client (JS)** | ❓ Nothing | [inrupt/solid-client-js](https://github.com/inrupt/solid-client-js) | 244 | none found | n/a | Solid data client; needed once pods speak QUERY |
+| **Inrupt solid-client-authn (JS)** | ❓ Nothing | [inrupt/solid-client-authn-js](https://github.com/inrupt/solid-client-authn-js) | 77 | none found | n/a | Authenticated `fetch` wrapper |
+| **Inrupt solid-client (Java)** | ❓ Nothing | [inrupt/solid-client-java](https://github.com/inrupt/solid-client-java) | 16 | none found | n/a | Java Solid client |
 
 ---
 
 ## Edge, proxies & caches
 
-Infrastructure that sits in front of apps. Body-aware caching and method allow-lists matter most here (RFC 10008 §2.7).
+Infrastructure in front of apps. Body-aware caching and method allow-lists matter most (RFC 10008 §2.7).
 
 | Stack | Status | Repo | ★ Stars | PR / issue | Days after RFC | Notes |
 |---|---|---|---:|---|---|---|
 | **Traefik** | ⚠️ Open | [traefik/traefik](https://github.com/traefik/traefik) | 64,053 | [Issue #13544](https://github.com/traefik/traefik/issues/13544) — open | **+34** (Jul 20) | End-to-end QUERY: forward, middlewares, body-keyed cache |
-| **Kong** | ⚠️ Open | [Kong/kong](https://github.com/Kong/kong) | 43,822 | [Discussion #14944](https://github.com/Kong/kong/discussions/14944) — open | **+34** (Jul 20) | End-to-end QUERY: proxy, plugins, body-keyed Proxy Cache; retries list missing QUERY |
+| **Kong** | ⚠️ Open | [Kong/kong](https://github.com/Kong/kong) | 43,822 | [Discussion #14944](https://github.com/Kong/kong/discussions/14944) — open | **+34** (Jul 20) | Proxy, plugins, body-keyed Proxy Cache; retries list missing QUERY |
 | **nginx** | ⚠️ Open | [nginx/nginx](https://github.com/nginx/nginx) | 31,171 | [PR #1488](https://github.com/nginx/nginx/pull/1488) — open · ([#1511](https://github.com/nginx/nginx/pull/1511) closed) | **+6** | Recognition only; body cache key TBD |
 | **Envoy** | ❓ Nothing | [envoyproxy/envoy](https://github.com/envoyproxy/envoy) | 28,606 | none found | n/a | No public RFC 10008 tracking found |
 | **Cloudflare workerd** | ⚠️ Open | [cloudflare/workerd](https://github.com/cloudflare/workerd) | 8,411 | [Issue #6849](https://github.com/cloudflare/workerd/issues/6849) — open | **+14** | Body-keyed QUERY caching (Cache API) |
@@ -67,10 +87,11 @@ Infrastructure that sits in front of apps. Body-aware caching and method allow-l
 
 | Stack | Status | Repo | ★ Stars | PR / issue | Days after RFC | Notes |
 |---|---|---|---:|---|---|---|
+| **OpenAPI** | ✅ Spec-level | [OAI/OpenAPI-Specification](https://github.com/OAI/OpenAPI-Specification) | 31,098 | [3.2.0 announcement](https://www.openapis.org/blog/2025/09/23/announcing-openapi-v3-2) | **−266** | Documents QUERY operations (client + server codegen) |
 | **MDN** | ⚠️ Open | [mdn/content](https://github.com/mdn/content) | 10,886 | [PR #44568](https://github.com/mdn/content/pull/44568) — open · [Issue #44665](https://github.com/mdn/content/issues/44665) — open | **+8** / **+22** | QUERY method + `Accept-Query` docs |
-| **WHATWG HTML** | ⚠️ Open | [whatwg/html](https://github.com/whatwg/html) | 9,329 | [Issue #12594](https://github.com/whatwg/html/issues/12594) — open | **+1** | `<form method="query">`; needs implementer interest |
-| **Browsers / fetch()** | ✅ Works, unofficial | [whatwg/fetch](https://github.com/whatwg/fetch) | 2,243 | [Issue #1938](https://github.com/whatwg/fetch/issues/1938) — open | **+14** | [Mozilla #1430](https://github.com/mozilla/standards-positions/issues/1430) open · [WebKit #692](https://github.com/WebKit/standards-positions/issues/692) closed invalid |
-| **RFC 10008** | ✅ Published | [IETF HTTP WG](https://datatracker.ietf.org/wg/httpbis/) | — | [RFC 10008](https://datatracker.ietf.org/doc/rfc10008/) | **0** | IESG approval Nov 20, 2025 = −208; label [`query-method`](https://github.com/httpwg/http-extensions/labels/query-method) |
+| **WHATWG HTML** | ⚠️ Open | [whatwg/html](https://github.com/whatwg/html) | 9,329 | [Issue #12594](https://github.com/whatwg/html/issues/12594) — open | **+1** | `<form method="query">` |
+| **Browsers / fetch()** | ✅ Works, unofficial | [whatwg/fetch](https://github.com/whatwg/fetch) | 2,243 | [Issue #1938](https://github.com/whatwg/fetch/issues/1938) — open | **+14** | Client surface in browsers; [Mozilla #1430](https://github.com/mozilla/standards-positions/issues/1430) open · [WebKit #692](https://github.com/WebKit/standards-positions/issues/692) closed invalid |
+| **RFC 10008** | ✅ Published | [IETF HTTP WG](https://datatracker.ietf.org/wg/httpbis/) | — | [RFC 10008](https://datatracker.ietf.org/doc/rfc10008/) | **0** | IESG approval Nov 20, 2025 = −208; [`query-method`](https://github.com/httpwg/http-extensions/labels/query-method) |
 
 ---
 
