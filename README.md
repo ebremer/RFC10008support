@@ -114,6 +114,26 @@ Infrastructure in front of apps. Body-aware caching and method allow-lists matte
 
 ---
 
+## Purpose-built QUERY projects & interop testing
+
+Greenfield projects written *for* QUERY, rather than existing stacks adding it. Tracked separately
+because star counts here measure novelty, not ecosystem penetration. Contributed via
+[jeswr/http-query-adoption#3](https://github.com/jeswr/http-query-adoption/pull/3) and
+[#4](https://github.com/jeswr/http-query-adoption/pull/4), which were redirected to this repo.
+
+| Project | Lang | Kind | ★ Stars | Source | Days after RFC | Notes |
+|---|---|---|---:|---|---|---|
+| [**Ayder**](https://github.com/A1darbek/ayder) | C | Adopter | 96 | [PR #10](https://github.com/A1darbek/ayder/pull/10) | **+31** · updated **+43** | HTTP-native durable event log / message bus. `interop/spring-query/` emits side-by-side receipts for QUERY-with-JSON-body direct vs. routed through Envoy, plus a Spring-side matching contract |
+| [**rfc10008-interop**](https://github.com/A1darbek/rfc10008-interop) | — | Interop suite | 0 | [repo](https://github.com/A1darbek/rfc10008-interop) | **+31** | Evidence-first matrix: portable checks emitting machine-readable receipts (`PASS` / `FAIL` / `NOT_SUPPORTED` / `NOT_APPLICABLE` / `UNVERIFIED` / `OBSERVED`) over ETag, conditional revalidation, `Content-Location`, semantic query identity, method override, CORS preflight and cache observability. Records evidence rather than pass/fail verdicts |
+| [**query-suite-example**](https://github.com/DanMat/query-suite-example) | JS (Workers) | Reference impl | 0 | [repo](https://github.com/DanMat/query-suite-example) | **+20** | Cloudflare Workers QUERY suite; one of the two implementations currently covered by the interop matrix |
+| [**query-go-sdk**](https://github.com/thatwasyahya/query-go-sdk) | Go | SDK | 0 | [repo](https://github.com/thatwasyahya/query-go-sdk) | **+23** | Dependency-free client + server SDK; §2.5-conformant redirect handling |
+| [**http-query**](https://github.com/thatwasyahya/http-query) | Rust | SDK | 0 | [repo](https://github.com/thatwasyahya/http-query) | **+35** | Client + server SDK built on reqwest + axum |
+
+Only two independent implementations are covered by the interop matrix so far, so it is not yet a
+conformance signal for the stacks in the tables above.
+
+---
+
 ## Cross-cutting: redirect semantics (§2.5)
 
 A recurring failure class, independent of language: clients that treat QUERY like POST on 301/302 and silently downgrade it to GET, discarding the query body.
@@ -131,5 +151,5 @@ Worth checking explicitly in any stack marked "✅ Generic" above — arbitrary-
 
 ## Related trackers
 
-- [jeswr/http-query-adoption](https://github.com/jeswr/http-query-adoption) — **retired**; content assimilated into the tables above
+- [jeswr/http-query-adoption](https://github.com/jeswr/http-query-adoption) — **retired**; content assimilated into the tables above. The owner is archiving it in favour of this repo and closed [#3](https://github.com/jeswr/http-query-adoption/pull/3) / [#4](https://github.com/jeswr/http-query-adoption/pull/4) redirecting contributors here (+48)
 - Digest-based QUERY cache negotiation: [httpwg/http-extensions#3469](https://github.com/httpwg/http-extensions/issues/3469) — **closed completed** (+13)
