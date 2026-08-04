@@ -88,6 +88,7 @@ Infrastructure in front of apps. Body-aware caching and method allow-lists matte
 
 | Stack | Lang | Status | ★ Stars | PR / issue | Days after RFC | Notes |
 |---|---|---|---:|---|---|---|
+| [**Caddy**](https://github.com/caddyserver/caddy)               | Go          | ❓ Nothing             | 74,600  | none found                                                                                                                                     | n/a                      | No RFC 10008 tracking found. Built on Go's `net/http`, so raw QUERY requests likely pass through untouched today, but nothing in Caddy's repo/forum addresses QUERY explicitly; closed, pre-RFC #5166 shows unrecognized methods historically fell back rather than returning 501 |
 | [**Traefik**](https://github.com/traefik/traefik) | Go | ⚠️ Declined (roadmap) | 64,254 | [Issue #13544](https://github.com/traefik/traefik/issues/13544) — open | **+34** · reply **+41** | Maintainers: "makes a lot of sense" but not on the roadmap "for a while"; community contribution invited |
 | [**Kong**](https://github.com/Kong/kong) | Lua / Nginx | ⚠️ No response | 43,908 | [Discussion #14944](https://github.com/Kong/kong/discussions/14944) — open | **+34** | Proxy, plugins, body-keyed Proxy Cache; retries list missing QUERY. Zero comments since filing |
 | [**nginx**](https://github.com/nginx/nginx) | C | ⚠️ Open | 31,318 | [PR #1488](https://github.com/nginx/nginx/pull/1488) — open · ([#1511](https://github.com/nginx/nginx/pull/1511) closed) | **+6** | Recognition only; body cache key TBD; idle since +9 |
