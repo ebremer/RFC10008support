@@ -2,6 +2,8 @@
 
 Day **0** = RFC publication **2026-06-16**. Last refreshed **2026-09-04** (day **+80**). ★ Stars are approximate (fetched ~2026-09-04).
 
+**Browse this as a searchable site: [ebremer.github.io/RFC10008support](https://ebremer.github.io/RFC10008support/)** — same data, filterable by status, plus an [adoption curve](https://ebremer.github.io/RFC10008support/adoption-curve.html). This file stays the source of truth; the site is generated from it.
+
 Tracking is split by role: **servers** (inbound), **clients** (outbound), **edge** (proxies/caches), and **specs/docs/tooling**. The same monorepo can appear in more than one table when server and client surfaces differ (e.g. Spring Framework). Stack names link to the project home when available.
 
 ---

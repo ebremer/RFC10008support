@@ -1,0 +1,49 @@
+name: Build site from README
+
+# README.md is the source of truth. Whenever it changes, regenerate docs/ so the
+# GitHub Pages site never drifts from the table it is rendering.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - tools/**
+      - .github/workflows/build-site.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-site
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # the adoption curve is reconstructed from the history of README.md,
+          # so a shallow clone would silently produce a one-point chart
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build
+        run: python tools/build_site.py
+
+      - name: Commit if the site changed
+        run: |
+          if [ -z "$(git status --porcelain docs)" ]; then
+            echo "docs/ already up to date"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs
+          git commit -m "Rebuild site from README (${GITHUB_SHA::7})"
+          git push

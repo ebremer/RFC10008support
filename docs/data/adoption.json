@@ -1,0 +1,74 @@
+[
+ {
+  "sha": "9dc9555",
+  "date": "2026-07-20",
+  "week": "2026-W30",
+  "day": 34,
+  "total": 53,
+  "supporting": 19,
+  "working": 15,
+  "dont": 19,
+  "declined": 3,
+  "none": 16
+ },
+ {
+  "sha": "4937465",
+  "date": "2026-08-05",
+  "week": "2026-W32",
+  "day": 50,
+  "total": 72,
+  "supporting": 26,
+  "working": 26,
+  "dont": 20,
+  "declined": 4,
+  "none": 16
+ },
+ {
+  "sha": "593a6c5",
+  "date": "2026-08-14",
+  "week": "2026-W33",
+  "day": 59,
+  "total": 77,
+  "supporting": 32,
+  "working": 25,
+  "dont": 20,
+  "declined": 4,
+  "none": 16
+ },
+ {
+  "sha": "c1b0001",
+  "date": "2026-08-21",
+  "week": "2026-W34",
+  "day": 66,
+  "total": 99,
+  "supporting": 42,
+  "working": 38,
+  "dont": 19,
+  "declined": 3,
+  "none": 16
+ },
+ {
+  "sha": "4874dd9",
+  "date": "2026-08-28",
+  "week": "2026-W35",
+  "day": 73,
+  "total": 147,
+  "supporting": 60,
+  "working": 70,
+  "dont": 17,
+  "declined": 2,
+  "none": 15
+ },
+ {
+  "sha": "86a7375",
+  "date": "2026-09-04",
+  "week": "2026-W36",
+  "day": 80,
+  "total": 161,
+  "supporting": 72,
+  "working": 71,
+  "dont": 18,
+  "declined": 3,
+  "none": 15
+ }
+]

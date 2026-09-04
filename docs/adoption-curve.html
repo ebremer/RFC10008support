@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RFC 10008 Adoption Curve</title>
+<meta name="description" content="Weekly counts of projects supporting, working on, or not tracking RFC 10008.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2213%22 font-size=%2213%22>%F0%9F%93%88</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+  .chart-card { background: var(--surface); border: 1px solid var(--hair); border-radius: 10px;
+                padding: 22px 22px 14px; display: flex; flex-direction: column; gap: 16px;
+                --s-total: #2a78d6; --s-working: #eb6834; --s-supporting: #1baf7a; --s-dont: #eda100; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chart-card {
+    --s-total: #3987e5; --s-working: #d95926; --s-supporting: #199e70; --s-dont: #c98500; } }
+  :root[data-theme="dark"] .chart-card {
+    --s-total: #3987e5; --s-working: #d95926; --s-supporting: #199e70; --s-dont: #c98500; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; }
+  .legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink-2); }
+  .legend-key { width: 18px; height: 2px; border-radius: 1px; flex: none; }
+  .plot-shell { position: relative; overflow-x: auto; }
+  svg.plot { display: block; width: 100%; height: auto; min-width: 620px; }
+  .grid-line { stroke: var(--grid); stroke-width: 1; }
+  .axis-line { stroke: var(--grid); stroke-width: 1; }
+  .tick { font-family: var(--mono); font-size: 11.5px; fill: var(--muted); }
+  .tick-date { font-family: var(--sans); font-size: 10.5px; fill: var(--muted); }
+  .axis-title { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; fill: var(--muted); }
+  .series-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .marker { stroke: var(--surface); stroke-width: 2; }
+  .end-label { font-size: 12.5px; font-weight: 600; fill: var(--ink); }
+  .end-label-sub { font-family: var(--mono); font-size: 11px; fill: var(--ink-2); }
+  .crosshair { stroke: var(--muted); stroke-width: 1; opacity: 0; }
+  .hit { fill: transparent; cursor: crosshair; }
+  .tip { position: absolute; pointer-events: none; opacity: 0; transition: opacity .12s ease;
+         background: var(--raised); border: 1px solid var(--hair); box-shadow: 0 6px 20px rgba(0,0,0,.13);
+         border-radius: 8px; padding: 10px 12px; min-width: 176px; z-index: 4; }
+  .tip.on { opacity: 1; }
+  .tip-head { font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; color: var(--muted);
+              text-transform: uppercase; margin-bottom: 8px; }
+  .tip-row { display: grid; grid-template-columns: 16px 1fr auto; align-items: center; gap: 9px; padding: 2px 0; }
+  .tip-key { height: 2px; border-radius: 1px; }
+  .tip-name { font-size: 12.5px; color: var(--ink-2); }
+  .tip-val { font-family: var(--mono); font-size: 13.5px; font-weight: 600; color: var(--ink);
+             font-variant-numeric: tabular-nums; }
+  .tip-foot { margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--hair); font-size: 11.5px; color: var(--muted); }
+  .chart-table table { min-width: 620px; }
+  .chart-table thead th { top: var(--bar-h); }
+  .chart-table td { font-family: var(--mono); font-size: 13.5px; color: var(--ink); text-align: right; }
+  .chart-table td:first-child, .chart-table th:first-child { text-align: left; }
+  .chart-table th { text-align: right; }
+  .chart-table td.day { color: var(--ink-2); }
+  .chart-table tbody tr:last-child td { font-weight: 600; }
+  .th-key { display: inline-block; width: 14px; height: 2px; border-radius: 1px;
+            vertical-align: middle; margin-right: 6px; }
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(272px, 1fr)); gap: 22px; }
+  .note h3 { margin: 0 0 5px; font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .note p { margin: 0; font-size: 13.5px; color: var(--ink-2); max-width: 58ch; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <a class="brand" href="index.html">RFC&nbsp;10008 <span>/ adoption</span></a>
+  <nav class="topnav">
+    <a href="index.html">Tracker</a>
+    <a href="adoption-curve.html" aria-current="page">Adoption curve</a>
+    <a href="https://github.com/ebremer/RFC10008support" target="_blank" rel="noopener">Repo</a>
+  </nav>
+</div></header>
+<main class="wrap">
+<div class="masthead">
+  <div class="eyebrow"><span>Day 0 = 2026-06-16</span><span>6 weekly snapshots</span>
+  <span>+34 &rarr; +80</span></div>
+  <h1>RFC 10008 Adoption Curve</h1>
+  <p class="standfirst">Every project in the tracker, counted by status at the end of each week.
+  The x-axis is the tracker's own unit: days after RFC publication.</p>
+</div>
+<section class="chart-card">
+  <div class="legend" id="legend"></div>
+  <div class="plot-shell" id="shell">
+    <svg class="plot" id="plot" viewBox="0 0 960 452" role="img" aria-label="Line chart of tracked projects by status from day +34 to day +80 after RFC 10008 publication. Total rises from 53 to 161; supporting from 19 to 72; working on it from 15 to 71; not-yet stays between 17 and 20."></svg>
+    <div class="tip" id="tip" role="status" aria-live="polite"></div>
+  </div>
+</section>
+<section class="section chart-table">
+  <h2>Table view</h2>
+  <div class="table-scroll"><table>
+    <thead><tr>
+      <th scope="col">Snapshot</th><th scope="col">Day</th>
+      <th scope="col"><span class="th-key" style="background:#2a78d6"></span>Total tracked</th>
+      <th scope="col"><span class="th-key" style="background:#eb6834"></span>Working on it</th>
+      <th scope="col"><span class="th-key" style="background:#1baf7a"></span>Supporting</th>
+      <th scope="col"><span class="th-key" style="background:#eda100"></span>Don&rsquo;t</th>
+      <th scope="col">&mdash; declined</th><th scope="col">&mdash; no signal</th>
+    </tr></thead>
+    <tbody id="chart-tbody"></tbody>
+  </table></div>
+</section>
+<section class="notes">
+  <div class="note"><h3>What each line counts</h3>
+  <p>One row per project, de-duplicated where a project appears in more than one table (Go, Spring and
+  aiohttp each carry a server and a client row). <strong>Supporting</strong> is &#9989;;
+  <strong>working on it</strong> is &#9888;&#65039;; <strong>don&rsquo;t</strong> is &#10060; declined
+  plus &#10067; no tracking found.</p></div>
+  <div class="note"><h3>The flat line is the finding</h3>
+  <p>Total tracked triples, but &ldquo;don&rsquo;t&rdquo; never moves. Almost every project discovered
+  since has arrived already supporting or already in progress &mdash; and that line is mostly
+  <em>silence</em>, not refusal: only 3 of the 18 are actual declines. The other 15
+  are stacks where no QUERY issue exists at all.</p></div>
+  <div class="note"><h3>Coverage grows too</h3>
+  <p>Each refresh runs discovery searches, so the total rises from both real adoption and wider
+  tracking. Read the ratio between the lines rather than the absolute total.</p></div>
+</section>
+<footer>
+  <span>Reconstructed at build time from the git history of <code>README.md</code> &mdash; the last
+  commit of each ISO week, 9dc9555 through 86a7375. Points sit at their true day offset, so
+  a skipped week leaves a gap rather than a false straight line.</span>
+</footer>
+</main>
+<script>window.ADOPTION = [{"sha":"9dc9555","date":"2026-07-20","week":"2026-W30","day":34,"total":53,"supporting":19,"working":15,"dont":19,"declined":3,"none":16},{"sha":"4937465","date":"2026-08-05","week":"2026-W32","day":50,"total":72,"supporting":26,"working":26,"dont":20,"declined":4,"none":16},{"sha":"593a6c5","date":"2026-08-14","week":"2026-W33","day":59,"total":77,"supporting":32,"working":25,"dont":20,"declined":4,"none":16},{"sha":"c1b0001","date":"2026-08-21","week":"2026-W34","day":66,"total":99,"supporting":42,"working":38,"dont":19,"declined":3,"none":16},{"sha":"4874dd9","date":"2026-08-28","week":"2026-W35","day":73,"total":147,"supporting":60,"working":70,"dont":17,"declined":2,"none":15},{"sha":"86a7375","date":"2026-09-04","week":"2026-W36","day":80,"total":161,"supporting":72,"working":71,"dont":18,"declined":3,"none":15}];</script>
+<script src="chart.js"></script>
+</body>
+</html>
