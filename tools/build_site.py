@@ -114,7 +114,112 @@ def col_class(header):
     return ""
 
 
-def render_table(header, body):
+def row_key(cells):
+    """Stable identity for a tracker row: the stack's repo, or its name."""
+    first = cells[0] if cells else ""
+    m = re.search(r"github\.com/([\w.\-]+)/([\w.\-]+)", first)
+    if not m:
+        for cell in cells[1:]:
+            m = re.search(r"github\.com/([\w.\-]+)/([\w.\-]+)", cell)
+            if m:
+                break
+    if m:
+        return ("%s/%s" % m.groups()).lower()
+    return strip_md(first).lower()
+
+
+def star_index(header):
+    for i, h in enumerate(header):
+        if "star" in h.lower():
+            return i
+    return None
+
+
+def comparable_cells(cells, skip):
+    kept = []
+    for i, cell in enumerate(cells):
+        if i == skip:
+            continue
+        kept.append(re.sub(r"\s+", " ", cell).strip())
+    return tuple(kept)
+
+
+def iter_tables(md):
+    """Yield (section title, header cells, body rows) for every markdown table."""
+    section = ""
+    lines = md.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.startswith("## "):
+            section = line[3:].strip()
+            i += 1
+            continue
+        if line.startswith("|"):
+            block = []
+            while i < len(lines) and lines[i].startswith("|"):
+                block.append(split_row(lines[i]))
+                i += 1
+            if len(block) >= 2 and not is_divider(block[0]):
+                body = [r for r in block[1:] if not is_divider(r) and any(c.strip() for c in r)]
+                yield section, block[0], body
+            continue
+        i += 1
+
+
+def index_rows(md):
+    """Map (section, repo-or-name, occurrence) to the row with its star cell removed."""
+    found = {}
+    seen = collections.Counter()
+    for section, header, body in iter_tables(md):
+        skip = star_index(header)
+        for cells in body:
+            ident = row_key(cells)
+            n = seen[(section, ident)]
+            seen[(section, ident)] += 1
+            found[(section, ident, n)] = comparable_cells(cells, skip)
+    return found
+
+
+def previous_readme():
+    """The README from the refresh before this one.
+
+    An uncommitted refresh is compared with HEAD. A committed one is compared
+    with the README commit before HEAD, so the highlight survives the commit
+    and moves on at the next refresh.
+    """
+    try:
+        head = git("show", "HEAD:README.md")
+    except Exception:
+        return None
+    try:
+        current = open(README, encoding="utf-8").read()
+    except OSError:
+        return None
+    if current.replace("\r\n", "\n").replace("\r", "\n") != head.replace("\r\n", "\n").replace("\r", "\n"):
+        return head
+    try:
+        shas = git("log", "-2", "--format=%H", "--", "README.md").split()
+    except Exception:
+        return None
+    if len(shas) < 2:
+        return None
+    try:
+        return git("show", "%s:README.md" % shas[1])
+    except Exception:
+        return None
+
+
+def changed_row_keys(current_md, baseline_md):
+    """Rows whose text changed since the previous refresh. Star counts do not count."""
+    if not baseline_md:
+        return set()
+    before = index_rows(baseline_md)
+    after = index_rows(current_md)
+    return {key for key, cells in after.items() if before.get(key) != cells}
+
+
+def render_table(header, body, changed=None):
     cols = [col_class(h) for h in header]
     out = ['<div class="table-scroll"><table>', "<thead><tr>"]
     for h, c in zip(header, cols):
@@ -123,10 +228,18 @@ def render_table(header, body):
     out.append("</tr></thead><tbody>")
 
     counted = []
+    seen = collections.Counter()
     for cells in body:
         slug, label = classify(cells)
         attr = ' data-status="%s"' % slug if slug else ""
-        out.append("<tr%s>" % attr)
+        mark = ""
+        if changed is not None:
+            ident = row_key(cells)
+            n = seen[ident]
+            seen[ident] += 1
+            if (ident, n) in changed:
+                mark = ' class="is-changed" title="Changed since the last refresh"'
+        out.append("<tr%s%s>" % (mark, attr))
         for idx, cell in enumerate(cells):
             c = cols[idx] if idx < len(cols) else ""
             cls = ' class="%s"' % c if c else ""
@@ -154,13 +267,15 @@ def render_table(header, body):
 SKIP_INTRO = re.compile(r"Last refreshed|ebremer\.github\.io")
 
 
-def parse(md):
+def parse(md, changed=None):
     """README markdown -> (list of section dicts, intro html).
 
     Intro blocks are the prose above the first `##`. The refresh line becomes the
     eyebrow and the site link would point at this page, so both are dropped.
+    `changed` maps a section title to the (row key, occurrence) pairs that differ
+    from the previous refresh.
     """
-    lines = md.split("\n")
+    lines = md.replace("\r\n", "\n").replace("\r", "\n").split("\n")
     sections = []
     intro = []
     cur = None
@@ -198,7 +313,8 @@ def parse(md):
                 i += 1
             header = block[0]
             body = [r for r in block[1:] if not is_divider(r)]
-            markup, counted = render_table(header, body)
+            section_changed = (changed or {}).get(cur["title"] if cur else "", ())
+            markup, counted = render_table(header, body, section_changed)
             target().append(markup)
             if cur:
                 cur["rows"] += len(counted)
@@ -354,7 +470,7 @@ SEARCH_SVG = ('<svg width="14" height="14" viewBox="0 0 16 16" fill="none" '
               '<circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>')
 
 
-def build_index(intro, sections, counts, rows, latest):
+def build_index(intro, sections, counts, rows, latest, changed_count=0):
     head = HEAD.format(
         title="RFC 10008 Adoption Tracker",
         desc=("Which HTTP stacks support the QUERY method (RFC 10008) — %d projects tracked "
@@ -385,6 +501,15 @@ def build_index(intro, sections, counts, rows, latest):
                 cls=cls, slug=slug, n=n, label=label, sub=sub)
         )
 
+    if changed_count:
+        changed_note = (
+            '<p class="changed-note"><span class="swatch" aria-hidden="true"></span>'
+            'Green rows changed since the previous refresh. '
+            'Star counts are updated on every row and are not shaded.</p>'
+        )
+    else:
+        changed_note = ""
+
     body = [head, '<main class="wrap">']
     body.append("""
 <div class="masthead">
@@ -404,6 +529,7 @@ def build_index(intro, sections, counts, rows, latest):
   while the &ldquo;not yet&rdquo; count has barely moved.</p>
   <a class="go" href="adoption-curve.html">See the adoption curve &rarr;</a>
 </div>
+{changed_note}
 <div class="controls">
   <label class="search">{svg}
     <input id="q" type="search" placeholder="Search stacks, languages, notes…  (press /)"
@@ -416,7 +542,7 @@ def build_index(intro, sections, counts, rows, latest):
 <div id="empty" class="empty">No rows match. Try a different search, or clear the filters.</div>
 <div class="content">
 """.format(refreshed=refreshed, total=counts["total"], tiles="".join(tile_html),
-           svg=SEARCH_SVG, intro=intro))
+           svg=SEARCH_SVG, intro=intro, changed_note=changed_note))
 
     for s in sections:
         count = ('<span class="count">%d rows</span>' % s["rows"]) if s["rows"] else ""
@@ -580,7 +706,11 @@ def main():
     out = os.path.abspath(args.out)
 
     md = open(README, encoding="utf-8").read()
-    sections, intro = parse(md)
+    changed = changed_row_keys(md, previous_readme())
+    by_section = collections.defaultdict(set)
+    for section, ident, n in changed:
+        by_section[section].add((ident, n))
+    sections, intro = parse(md, by_section)
     counts = count_projects(md)
     rows = count_rows(md)
 
@@ -593,9 +723,9 @@ def main():
     open(os.path.join(out, ".nojekyll"), "w").close()
 
     with open(os.path.join(out, "index.html"), "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(build_index(intro, sections, counts, rows, latest))
-    print("  index.html    %d sections, %d rows, %d projects"
-          % (len(sections), sum(s["rows"] for s in sections), counts["total"]))
+        fh.write(build_index(intro, sections, counts, rows, latest, len(changed)))
+    print("  index.html    %d sections, %d rows, %d projects, %d changed"
+          % (len(sections), sum(s["rows"] for s in sections), counts["total"], len(changed)))
 
     points = weekly_history()
     if points:

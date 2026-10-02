@@ -82,5 +82,17 @@
   "dont": 19,
   "declined": 3,
   "none": 16
+ },
+ {
+  "sha": "7c6bcc9",
+  "date": "2026-10-02",
+  "week": "2026-W40",
+  "day": 108,
+  "total": 192,
+  "supporting": 98,
+  "working": 75,
+  "dont": 19,
+  "declined": 3,
+  "none": 16
  }
 ]
