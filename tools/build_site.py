@@ -470,7 +470,7 @@ SEARCH_SVG = ('<svg width="14" height="14" viewBox="0 0 16 16" fill="none" '
               '<circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>')
 
 
-def build_index(intro, sections, counts, rows, latest, changed_count=0):
+def build_index(intro, sections, counts, rows, latest, changed_count=0, snapshots=0):
     head = HEAD.format(
         title="RFC 10008 Adoption Tracker",
         desc=("Which HTTP stacks support the QUERY method (RFC 10008) — %d projects tracked "
@@ -501,6 +501,14 @@ def build_index(intro, sections, counts, rows, latest, changed_count=0):
                 cls=cls, slug=slug, n=n, label=label, sub=sub)
         )
 
+    if snapshots:
+        snap_blurb = ("%d weekly snapshots, reconstructed from this repository's own history: "
+                      "the total has tripled while the &ldquo;not yet&rdquo; count has barely moved."
+                      % snapshots)
+    else:
+        snap_blurb = ("Weekly snapshots, reconstructed from this repository's own history: "
+                      "the total has tripled while the &ldquo;not yet&rdquo; count has barely moved.")
+
     if changed_count:
         changed_note = (
             '<p class="changed-note"><span class="swatch" aria-hidden="true"></span>'
@@ -525,8 +533,7 @@ def build_index(intro, sections, counts, rows, latest, changed_count=0):
 </div>
 <div class="summary">{tiles}</div>
 <div class="callout">
-  <p>Six weekly snapshots, reconstructed from this repository's own history: the total has tripled
-  while the &ldquo;not yet&rdquo; count has barely moved.</p>
+  <p>{snap_blurb}</p>
   <a class="go" href="adoption-curve.html">See the adoption curve &rarr;</a>
 </div>
 {changed_note}
@@ -542,7 +549,7 @@ def build_index(intro, sections, counts, rows, latest, changed_count=0):
 <div id="empty" class="empty">No rows match. Try a different search, or clear the filters.</div>
 <div class="content">
 """.format(refreshed=refreshed, total=counts["total"], tiles="".join(tile_html),
-           svg=SEARCH_SVG, intro=intro, changed_note=changed_note))
+           svg=SEARCH_SVG, intro=intro, changed_note=changed_note, snap_blurb=snap_blurb))
 
     for s in sections:
         count = ('<span class="count">%d rows</span>' % s["rows"]) if s["rows"] else ""
@@ -713,6 +720,7 @@ def main():
     sections, intro = parse(md, by_section)
     counts = count_projects(md)
     rows = count_rows(md)
+    points = weekly_history()
 
     m = re.search(r"Last refreshed \*\*([\d-]+)\*\* \(day \*\*([+\-\d]+)\*\*\)", md)
     latest = "%s (day %s)" % (m.group(1), m.group(2)) if m else None
@@ -723,11 +731,10 @@ def main():
     open(os.path.join(out, ".nojekyll"), "w").close()
 
     with open(os.path.join(out, "index.html"), "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(build_index(intro, sections, counts, rows, latest, len(changed)))
+        fh.write(build_index(intro, sections, counts, rows, latest, len(changed), len(points)))
     print("  index.html    %d sections, %d rows, %d projects, %d changed"
           % (len(sections), sum(s["rows"] for s in sections), counts["total"], len(changed)))
 
-    points = weekly_history()
     if points:
         with open(os.path.join(out, "adoption-curve.html"), "w", encoding="utf-8", newline="\n") as fh:
             fh.write(build_chart(points, counts))
