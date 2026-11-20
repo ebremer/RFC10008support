@@ -1,0 +1,3 @@
+__pycache__/
+# refresh scripts' scratch data (saved GitHub pages, JSON); see tools/refresh/README.md
+tools/refresh/work/
